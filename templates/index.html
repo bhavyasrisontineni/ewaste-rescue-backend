@@ -1,0 +1,195 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>E-Waste Rescue | Smart recycling assistant</title>
+  <style>
+    :root { --ink:#17332c; --muted:#61736d; --green:#19765b; --mint:#eaf6ef; --line:#dce8df; --paper:#f7faf7; --white:#fff; --orange:#f2a65a; }
+    * { box-sizing:border-box; }
+    body { margin:0; font-family:Inter,ui-sans-serif,system-ui,-apple-system,"Segoe UI",sans-serif; color:var(--ink); background:var(--paper); }
+    header { padding:20px max(22px,calc((100% - 1120px)/2)); display:flex; justify-content:space-between; align-items:center; gap:14px; background:#fff; border-bottom:1px solid var(--line); }
+    .brand { display:flex; align-items:center; gap:10px; font-weight:800; letter-spacing:-.3px; font-size:19px; }
+    .logo { width:38px;height:38px;border-radius:13px;background:var(--green);color:white;display:grid;place-items:center;font-size:21px; }
+    .status { color:var(--green);background:var(--mint);padding:8px 12px;border-radius:99px;font-size:12px;font-weight:700; }
+    main { max-width:1120px; margin:0 auto; padding:36px 22px 56px; }
+    .hero { display:grid; grid-template-columns:1.1fr .9fr; gap:24px; align-items:center; margin-bottom:28px; }
+    .eyebrow { color:var(--green);font-size:12px;font-weight:800;text-transform:uppercase;letter-spacing:1.5px; }
+    h1 { font-size:clamp(34px,5vw,55px);line-height:1.04;letter-spacing:-2px;margin:12px 0 16px; }
+    .hero p { color:var(--muted);font-size:16px;line-height:1.7;max-width:590px; }
+    .hero-art { min-height:225px;border-radius:24px;background:linear-gradient(135deg,#d8f0df,#eff8eb);display:grid;place-items:center;position:relative;overflow:hidden; }
+    .art-circle { width:165px;height:165px;border-radius:50%;background:#fff9;display:grid;place-items:center;font-size:90px;box-shadow:0 16px 50px #1b65451a; }
+    .art-tag { position:absolute; padding:10px 13px;border-radius:13px;background:#fff;box-shadow:0 8px 24px #17332c14;font-size:12px;font-weight:700; }
+    .tag1 { top:23px;left:20px; } .tag2 { right:18px;bottom:24px; }
+    .grid { display:grid;grid-template-columns:minmax(0,1.15fr) minmax(280px,.85fr);gap:22px;align-items:start; }
+    .card { background:var(--white);border:1px solid var(--line);border-radius:20px;padding:23px;box-shadow:0 8px 28px #17332c05; }
+    .card h2 { font-size:20px;margin:0 0 7px;letter-spacing:-.4px; }
+    .sub { color:var(--muted);font-size:13px;line-height:1.5;margin:0 0 18px; }
+    .drop { border:1.5px dashed #a7c9b4;border-radius:16px;padding:24px 16px;text-align:center;background:#f9fcf9;cursor:pointer;transition:.2s; }
+    .drop.drag { background:var(--mint);border-color:var(--green); }
+    .upload-icon { width:52px;height:52px;border-radius:16px;background:var(--mint);display:grid;place-items:center;font-size:26px;margin:0 auto 10px; }
+    .drop strong { display:block;margin-bottom:5px; }
+    .drop small { color:var(--muted); }
+    input[type=file] { display:none; }
+    .preview { width:100%;max-height:250px;object-fit:contain;border-radius:13px;margin-top:14px;display:none;background:#f0f4f0; }
+    .file-name { font-size:12px;color:var(--muted);margin-top:9px;overflow-wrap:anywhere; }
+    button { border:0;cursor:pointer;font:inherit;font-weight:750;border-radius:12px;padding:13px 16px;transition:.18s; }
+    button:disabled { opacity:.5;cursor:not-allowed; }
+    .primary { width:100%;background:var(--green);color:white;margin-top:15px; }
+    .primary:hover:not(:disabled) { background:#125e47;transform:translateY(-1px); }
+    .secondary { background:#edf5ef;color:var(--green);font-size:12px;padding:9px 11px; }
+    .result { display:none;margin-top:22px; }
+    .result-top { display:flex;justify-content:space-between;gap:12px;align-items:start; }
+    .category { font-size:25px;font-weight:850;letter-spacing:-.8px;margin:7px 0; }
+    .pill { border-radius:99px;background:var(--mint);color:var(--green);font-size:11px;font-weight:800;padding:7px 10px;white-space:nowrap; }
+    .confidence { color:var(--muted);font-size:12px;margin:0 0 12px; }
+    .guide-title { font-size:14px;font-weight:800;margin:20px 0 10px; }
+    .guide-list { margin:0;padding-left:19px;color:#465b53;font-size:13px;line-height:1.65; }
+    .guide-list li { margin:7px 0; }
+    .notice { background:#fff7e9;border:1px solid #f5dfb8;color:#7a5624;padding:11px 12px;border-radius:12px;font-size:11px;line-height:1.5;margin-top:16px; }
+    .history-head { display:flex;justify-content:space-between;align-items:center;gap:10px; }
+    .history { display:grid;gap:10px;margin-top:15px; }
+    .history-item { display:flex;align-items:center;gap:11px;border:1px solid var(--line);border-radius:13px;padding:11px; }
+    .history-thumb { width:45px;height:45px;border-radius:10px;object-fit:cover;background:var(--mint); }
+    .history-name { font-size:12px;font-weight:800;overflow-wrap:anywhere; }
+    .history-meta { color:var(--muted);font-size:11px;margin-top:4px; }
+    .empty { padding:20px 8px;text-align:center;color:var(--muted);font-size:13px; }
+    .alert { display:none;margin-top:12px;padding:12px;border-radius:12px;font-size:13px;line-height:1.5; }
+    .alert.error { display:block;background:#fff0ef;color:#9d332b;border:1px solid #f3d0cc; }
+    .foot { text-align:center;color:var(--muted);font-size:11px;line-height:1.6;margin-top:25px; }
+    @media(max-width:780px) { .hero,.grid { grid-template-columns:1fr; } .hero-art { min-height:180px; } header { padding:16px 18px; } main { padding:25px 15px 40px; } .card { padding:18px; } }
+  </style>
+</head>
+<body>
+<header>
+  <div class="brand"><span class="logo">↻</span> E-Waste Rescue</div>
+  <div class="status">● Local demo</div>
+</header>
+<main>
+  <section class="hero">
+    <div>
+      <div class="eyebrow">Smarter disposal starts here</div>
+      <h1>Give your old electronics a <span style="color:var(--green)">better next life.</span></h1>
+      <p>Upload a photo of an electronic item to identify its likely category and get practical recycling guidance. Keep e-waste out of general waste streams.</p>
+    </div>
+    <div class="hero-art" aria-label="Illustration of recycling electronics">
+      <span class="art-tag tag1">♻ Responsible recycling</span>
+      <div class="art-circle">📱</div>
+      <span class="art-tag tag2">🔋 Reduce e-waste</span>
+    </div>
+  </section>
+
+  <section class="grid">
+    <div>
+      <div class="card">
+        <h2>Identify your e-waste</h2>
+        <p class="sub">Choose a clear JPG, PNG, or WEBP photo (maximum 8 MB).</p>
+        <label class="drop" id="drop">
+          <span class="upload-icon">↑</span>
+          <strong>Drop your image here</strong>
+          <small>or click to browse files</small>
+          <input id="imageInput" type="file" accept=".jpg,.jpeg,.png,.webp,image/jpeg,image/png,image/webp">
+          <img id="preview" class="preview" alt="Selected image preview">
+          <div id="fileName" class="file-name"></div>
+        </label>
+        <button id="classifyBtn" class="primary" disabled>Analyze image →</button>
+        <div id="alert" class="alert"></div>
+      </div>
+
+      <div id="result" class="card result">
+        <div class="result-top">
+          <div>
+            <div class="eyebrow">AI classification result</div>
+            <div id="category" class="category">—</div>
+          </div>
+          <div id="modelPill" class="pill">Model</div>
+        </div>
+        <p id="confidence" class="confidence"></p>
+        <div class="guide-title">Recommended disposal steps</div>
+        <ul id="guideList" class="guide-list"></ul>
+        <div id="notice" class="notice"></div>
+      </div>
+    </div>
+
+    <aside class="card">
+      <div class="history-head">
+        <div><h2>Recent scans</h2><p class="sub" style="margin:5px 0 0">Saved on this computer only.</p></div>
+        <button id="clearBtn" class="secondary">Clear</button>
+      </div>
+      <div id="history" class="history"><div class="empty">Your scans will appear here.</div></div>
+      <div class="notice" style="margin-top:18px">Local demo mode: images and scan history stay in this project folder. No AWS resources are called.</div>
+    </aside>
+  </section>
+  <div class="foot">E-Waste Rescue · Educational demo · Always follow local authority guidance and use authorized e-waste collection services.</div>
+</main>
+<script>
+const input = document.getElementById('imageInput');
+const drop = document.getElementById('drop');
+const preview = document.getElementById('preview');
+const fileName = document.getElementById('fileName');
+const button = document.getElementById('classifyBtn');
+const alertBox = document.getElementById('alert');
+let selectedFile = null;
+
+function setError(message) {
+  alertBox.className = 'alert error';
+  alertBox.textContent = message;
+}
+function clearError() { alertBox.className = 'alert'; alertBox.textContent = ''; }
+function chooseFile(file) {
+  clearError();
+  if (!file) return;
+  const allowed = ['image/jpeg','image/png','image/webp'];
+  if (!allowed.includes(file.type)) { setError('Please choose a JPG, PNG, or WEBP image.'); return; }
+  if (file.size > 8 * 1024 * 1024) { setError('Image must be 8 MB or smaller.'); return; }
+  selectedFile = file;
+  preview.src = URL.createObjectURL(file);
+  preview.style.display = 'block';
+  fileName.textContent = `${file.name} · ${(file.size/1024/1024).toFixed(2)} MB`;
+  button.disabled = false;
+}
+input.addEventListener('change', () => chooseFile(input.files[0]));
+['dragenter','dragover'].forEach(name => drop.addEventListener(name, e => { e.preventDefault(); drop.classList.add('drag'); }));
+['dragleave','drop'].forEach(name => drop.addEventListener(name, e => { e.preventDefault(); drop.classList.remove('drag'); }));
+drop.addEventListener('drop', e => chooseFile(e.dataTransfer.files[0]));
+button.addEventListener('click', async () => {
+  if (!selectedFile) return;
+  button.disabled = true; button.textContent = 'Analyzing image…'; clearError();
+  try {
+    const form = new FormData(); form.append('image', selectedFile);
+    const response = await fetch('/api/classify', {method:'POST', body:form});
+    const data = await response.json();
+    if (!response.ok) throw new Error(data.error || 'Classification failed.');
+    document.getElementById('result').style.display = 'block';
+    document.getElementById('category').textContent = (data.prediction.category || 'other_e_waste').replaceAll('_',' ').replace(/\b\w/g, c=>c.toUpperCase());
+    document.getElementById('modelPill').textContent = data.prediction.model_status === 'pretrained_zero_shot' ? 'CLIP model' : 'Demo model';
+    const score = data.prediction.confidence;
+    document.getElementById('confidence').textContent = score == null ? 'No confidence score available.' : `Similarity score: ${(score*100).toFixed(1)}% · This is not a calibrated probability.`;
+    const list = document.getElementById('guideList'); list.innerHTML = '';
+    (data.disposalGuide.guidance || []).forEach(text => { const li=document.createElement('li'); li.textContent=text; list.appendChild(li); });
+    document.getElementById('notice').textContent = data.prediction.notice || 'AI predictions can be wrong. Confirm disposal requirements locally.';
+    await loadHistory();
+    document.getElementById('result').scrollIntoView({behavior:'smooth',block:'nearest'});
+  } catch (error) { setError(error.message); }
+  finally { button.disabled = !selectedFile; button.textContent = 'Analyze image →'; }
+});
+async function loadHistory() {
+  const response = await fetch('/api/history'); const data = await response.json();
+  const root = document.getElementById('history'); root.innerHTML = '';
+  if (!data.items.length) { root.innerHTML = '<div class="empty">Your scans will appear here.</div>'; return; }
+  data.items.forEach(item => {
+    const row = document.createElement('div'); row.className = 'history-item';
+    const icon = document.createElement('div'); icon.className = 'history-thumb'; icon.style.display='grid'; icon.style.placeItems='center'; icon.style.fontSize='21px'; icon.textContent='♻';
+    const text = document.createElement('div'); text.style.minWidth='0';
+    const name = document.createElement('div'); name.className='history-name'; name.textContent=(item.category||'item').replaceAll('_',' ');
+    const meta = document.createElement('div'); meta.className='history-meta'; meta.textContent=`${item.filename} · ${new Date(item.createdAt).toLocaleString()}`;
+    text.append(name,meta); row.append(icon,text); root.append(row);
+  });
+}
+document.getElementById('clearBtn').addEventListener('click', async () => {
+  await fetch('/api/history/clear',{method:'POST'}); await loadHistory();
+});
+loadHistory();
+</script>
+</body>
+</html>
